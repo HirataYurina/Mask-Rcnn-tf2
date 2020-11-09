@@ -22,8 +22,12 @@ class ProposalLayer(layers.Layer):
 
     """
     
-    def __init__(self, proposal_count, score_thres, config,
-                 rpn_bbox_std_dev=np.array([0.1, 0.1, 0.2, 0.2]), **kwargs):
+    def __init__(self,
+                 proposal_count,
+                 score_thres,
+                 config,
+                 rpn_bbox_std_dev=np.array([0.1, 0.1, 0.2, 0.2]),
+                 **kwargs):
         super(ProposalLayer, self).__init__(**kwargs)
         self.proposal_count = proposal_count
         self.score_thres = score_thres
