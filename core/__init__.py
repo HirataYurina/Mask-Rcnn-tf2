@@ -4,10 +4,3 @@
 # datetime:1993/12/01
 # filename:__init__.py.py
 # software: PyCharm
-
-import tensorflow as tf
-import numpy as np
-
-a = np.array([[1, 2, 3],
-              [4, 5, 6]])
-print(tf.nn.top_k(a, k=1))
