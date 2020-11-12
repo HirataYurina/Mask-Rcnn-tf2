@@ -8,7 +8,7 @@
 import tensorflow as tf
 # import tensorflow.keras as keras
 import tensorflow.keras.layers as layers
-from util.utils import delta2box
+from util.utils import delta2box, resize
 
 
 class ProposalLayer(layers.Layer):
@@ -172,13 +172,34 @@ class DetectionLayer(layers.Layer):
         return scores_batch, boxes_batch, classes_batch
 
 
-def mask_detection():
-    # 1.select mask with threshold(0.5 is recommended in "mask rcnn" paper)
+def mask_detection(mask, bbox, image_shape):
+    """detect true masks from neural network and add it into the original image coordinate
 
+    Args:
+        mask:        [height, width] usually, shape is [28, 28]
+        bbox:        [y1, x1, y2, x2] elements should be int
+        image_shape:
+
+    Returns:
+        true_masks: [height, width] the positive mask is 1 and the negative mask is 0
+
+    """
+    # 1.select mask with threshold(0.5 is recommended in "mask rcnn" paper)
     # 2.resize 28*28 to proposals' scale
+    score_thres = 0.5
+    y1, x1, y2, x2 = bbox
+    w = x2 - x1
+    h = y2 - y1
+    mask = resize(mask, (h, w))
+    pos_masks = tf.where(mask > score_thres,
+                         tf.ones_like(mask, dtype=tf.int32),
+                         tf.zeros_like(mask, dtype=tf.int32))  # [num_pos, 2]
 
     # 3.put masks into original image
-    pass
+    true_masks = tf.zeros(shape=image_shape[:2], dtype=tf.int32)
+    true_masks[y1:y2, x1:x2] = pos_masks
+
+    return true_masks
 
 
 def detection():
